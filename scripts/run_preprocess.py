@@ -4,9 +4,7 @@ import shutil
 import sys
 from pathlib import Path
 
-# Add parent directory to path so we can import preprocess module
 sys.path.append(str(Path(__file__).parent.parent))
-
 from preprocess import (
     check_schema,
     column_normalize_and_save,
@@ -50,6 +48,7 @@ def main(args):
     print("[8/8] Preprocess artifacts: saved to ../artifacts")
 
     if args.delete_intermediate:
+
         def safe_rmtree(p: Path) -> None:
             try:
                 if p.exists() and p.is_dir():
@@ -72,7 +71,16 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run NYC taxi preprocessing pipeline")
-    parser.add_argument("--raw-root", type=str, default="../data/raw", help="Path to the raw parquet files directory")
-    parser.add_argument("--delete-intermediate", action="store_true", help="Delete intermediate directories after processing completes")
+    parser.add_argument(
+        "--raw-root",
+        type=str,
+        default="../data/raw",
+        help="Path to the raw parquet files directory",
+    )
+    parser.add_argument(
+        "--delete-intermediate",
+        action="store_true",
+        help="Delete intermediate directories after processing completes",
+    )
     args = parser.parse_args()
     main(args)

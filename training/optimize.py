@@ -23,6 +23,7 @@ def optimize_lgbm(
     timeout: int | None = None,
     seed: int = 42,
     early_stopping_rounds: int = 200,
+    exp_dir: Path | str = "../artifacts/optimize"
 ):
     """Run Optuna optimization for LightGBM and save artifacts.
 
@@ -31,8 +32,6 @@ def optimize_lgbm(
 
     np.random.seed(seed)
     random.seed(seed)
-
-    exp_dir = Path(artifact_root) / "model_experiments" / "optuna_lgbm"
     exp_dir.mkdir(parents=True, exist_ok=True)
 
     study_name = "lgbm_regression_optimization"
@@ -115,4 +114,4 @@ def optimize_lgbm(
     print("Best RMSE:", study.best_value)
     print("Best params:", study.best_params)
 
-    return study.best_value, study.best_params, exp_dir
+    return study.best_value, study.best_params

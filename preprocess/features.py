@@ -7,7 +7,6 @@ from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, RobustScaler
 
-
 # Config
 TARGET = "total_amount"
 
@@ -68,18 +67,18 @@ def build_preprocess(
         Categorical columns to one-hot encode. Defaults to LOW_CARD_CAT if None.
     """
     numeric = list(numeric_features) if numeric_features is not None else list(NUMERIC)
-    cats = list(categorical_features) if categorical_features is not None else list(LOW_CARD_CAT)
+    cats = (
+        list(categorical_features)
+        if categorical_features is not None
+        else list(LOW_CARD_CAT)
+    )
 
     numeric_tf = Pipeline([("scale", RobustScaler())])
-    cat_tf = OneHotEncoder(handle_unknown="ignore", sparse_output=True)
+    cat_tf = OneHotEncoder(handle_unknown="ignore")
 
     return ColumnTransformer(
-        transformers=[
-            ("num", numeric_tf, numeric),
-            ("cat", cat_tf, cats),
-        ],
+        transformers=[("num", numeric_tf, numeric), ("cat", cat_tf, cats)],
         remainder="drop",
-        sparse_threshold=0.3,
     )
 
 
@@ -104,7 +103,9 @@ def split_xy(df: pd.DataFrame, target: str = TARGET) -> Tuple[pd.DataFrame, pd.S
     return X, y
 
 
-def fit_preprocess(preprocess: ColumnTransformer, X_train: pd.DataFrame) -> ColumnTransformer:
+def fit_preprocess(
+    preprocess: ColumnTransformer, X_train: pd.DataFrame
+) -> ColumnTransformer:
     """
     Fit the preprocessing pipeline on training features.
     """
@@ -119,14 +120,9 @@ def transform(preprocess: ColumnTransformer, X: pd.DataFrame):
     return preprocess.transform(X)
 
 
-def get_feature_names(preprocess: ColumnTransformer):
-    """
-    Get output feature names after preprocessing.
-    """
-    return preprocess.get_feature_names_out()
-
-
-def save_preprocess(preprocess: ColumnTransformer, artifacts_dir: Path | str = Path("../artifacts")) -> Path:
+def save_preprocess(
+    preprocess: ColumnTransformer, artifacts_dir: Path | str = Path("../artifacts")
+) -> Path:
     """
     Persist the fitted preprocessing pipeline to `artifacts_dir/preprocess.joblib`.
     """
@@ -137,21 +133,10 @@ def save_preprocess(preprocess: ColumnTransformer, artifacts_dir: Path | str = P
     return out
 
 
-def save_feature_names(feature_names, artifacts_dir: Path | str = Path("../artifacts")) -> Path:
-    """
-    Persist feature names to `artifacts_dir/feature_names.joblib`.
-    """
-    artifacts_dir = Path(artifacts_dir)
-    artifacts_dir.mkdir(parents=True, exist_ok=True)
-    out = artifacts_dir / "feature_names.joblib"
-    joblib.dump(feature_names, out)
-    return out
-
-
 def build_and_save_preprocess(
     train_path: Path | str = Path("../data/splits/train.parquet"),
     artifacts_dir: Path | str = Path("../artifacts"),
-) -> Tuple[Path, Path]:
+) -> Path:
     """
     Fit preprocessing on the training split and save both the pipeline and names.
 
@@ -172,7 +157,5 @@ def build_and_save_preprocess(
     X_train, _ = split_xy(df_train)
     pre = build_preprocess()
     pre = fit_preprocess(pre, X_train)
-    feature_names = get_feature_names(pre)
     p_path = save_preprocess(pre, artifacts_dir)
-    f_path = save_feature_names(feature_names, artifacts_dir)
-    return p_path, f_path
+    return p_path

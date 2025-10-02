@@ -4,6 +4,7 @@ import random
 import sys
 import warnings
 from pathlib import Path
+import shutil
 import catboost as cat
 import joblib
 import lightgbm as lgb
@@ -78,9 +79,10 @@ def main(args):
         exp_dir = Path(args.artifact_root) / "model_experiments"
         evaluate_model_zoo(models, X_train, y_train, X_val, y_val, exp_dir)
     elif args.mode == "optimize":
+        exp_dir = Path(args.artifact_root) / "optimize"
         if args.opt_model.lower() != "lightgbm":
             raise ValueError("Only LightGBM optimization is implemented. Use --opt_model lightgbm")
-        best_value, best_params, exp_dir = optimize_lgbm(
+        best_value, best_params,  = optimize_lgbm(
             X_train,
             y_train,
             X_val,
@@ -90,6 +92,7 @@ def main(args):
             timeout=args.timeout,
             seed=args.seed,
             early_stopping_rounds=args.early_stopping_rounds,
+            exp_dir=exp_dir
         )
         print("\nOptimization finished.")
         print("Best RMSE:", best_value)
@@ -98,12 +101,11 @@ def main(args):
         
     elif args.mode == "test":
         # Compare training on TRAIN vs TRAIN+VAL using saved best LightGBM params; evaluate both on TEST
-
-        exp_dir = Path(args.artifact_root) / "model_experiments" / "final_eval"
+        exp_dir = Path(args.artifact_root) / "final"
         exp_dir.mkdir(parents=True, exist_ok=True)
 
         params_path = (
-            Path(args.artifact_root) / "model_experiments" / "optuna_lgbm" / "best_params.json"
+            Path(args.artifact_root) / "optimize" / "best_params.json"
         )
         if not params_path.exists():
             raise FileNotFoundError(
@@ -129,7 +131,6 @@ def main(args):
         ))
 
         # Save predictions and metrics
-        np.save(exp_dir / "y_test_pred_train.npy", y_pred_train_only)
         with open(exp_dir / "metrics_test_train.json", "w", encoding="utf-8") as f:
             json.dump({
                 "mode": "train_only",
@@ -157,7 +158,6 @@ def main(args):
         # Save model, predictions and metrics for TRAIN+VAL
         model_path = exp_dir / "model.joblib"
         joblib.dump(model_trainval, model_path)
-        np.save(exp_dir / "y_test_pred_trainval.npy", y_pred_trainval)
         with open(exp_dir / "metrics_test_trainval.json", "w", encoding="utf-8") as f:
             json.dump({
                 "mode": "train_val",
@@ -181,8 +181,8 @@ def main(args):
         print(f"   => Better by RMSE: {better}")
 
         print("\nArtifacts saved in:", exp_dir)
-        print("Files: model.joblib, metrics_test_train.json, metrics_test_trainval.json,"
-              " y_test_pred_train.npy, y_test_pred_trainval.npy")
+        print("Files: model.joblib, metrics_test_train.json, metrics_test_trainval.json,")
+
     else:
         raise ValueError(f"Unknown mode: {args.mode}")
 

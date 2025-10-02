@@ -14,9 +14,7 @@ from .features import (
     split_xy,
     fit_preprocess,
     transform,
-    get_feature_names,
     save_preprocess,
-    save_feature_names,
     build_and_save_preprocess,
 )
 
@@ -60,9 +58,7 @@ __all__ = [
     "split_xy",
     "fit_preprocess",
     "transform",
-    "get_feature_names",
     "save_preprocess",
-    "save_feature_names",
     "build_and_save_preprocess",
     # sample
     "ym_from_name",

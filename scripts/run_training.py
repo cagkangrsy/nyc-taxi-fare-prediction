@@ -56,6 +56,10 @@ def main(args):
     MODEL_CONFIG_DICT["xgboost"]["random_state"] = seed
     MODEL_CONFIG_DICT["lightgbm"]["random_state"] = seed
     MODEL_CONFIG_DICT["catboost"]["random_seed"] = seed
+    valid_modes = {"evaluate", "optimize", "test"}
+    if args.mode not in valid_modes:
+        raise ValueError(f"Unknown mode: {args.mode}")
+
     splits = build_transform_splits(args.data_root, args.artifact_root)
 
     X_train, y_train = splits[0]
@@ -184,6 +188,7 @@ def main(args):
         print("Files: model.joblib, metrics_test_train.json, metrics_test_trainval.json,")
 
     else:
+        # This else should never be reached due to early validation above
         raise ValueError(f"Unknown mode: {args.mode}")
 
 

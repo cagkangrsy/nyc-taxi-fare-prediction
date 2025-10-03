@@ -18,15 +18,13 @@
 ---
 ## Project Walkthrough
 
-Read the end-to-end narrative with visuals and explanations. Notebooks are available, and to overcome rendering issues in some environments the HTML exports are more convenient:
+Read the end-to-end narrative with visuals and explanations. View on GitHub Pages (primary) or open the local HTML exports (fallback):
 
-- EDA: [notebooks/eda.ipynb](notebooks/eda.ipynb) · [docs/eda.html](docs/eda.html)
-- Preprocessing pipeline: [notebooks/preprocessing.ipynb](notebooks/preprocessing.ipynb) · [docs/preprocessing.html](docs/preprocessing.html)
-- Model experiments and tuning: [notebooks/model_experiments.ipynb](notebooks/model_experiments.ipynb) · [docs/model_experiments.html](docs/model_experiments.html)
+- EDA: [GitHub Pages: /eda.html](https://cagkangrsy.github.io/nyc-taxi-fare-prediction/eda.html) · [Local: docs/eda.html](docs/eda.html) · [Notebook: notebooks/eda.ipynb](notebooks/eda.ipynb)
+- Preprocessing pipeline: [GitHub Pages: /preprocessing.html](https://cagkangrsy.github.io/nyc-taxi-fare-prediction/preprocessing.html) · [Local: docs/preprocessing.html](docs/preprocessing.html) · [Notebook: notebooks/preprocessing.ipynb](notebooks/preprocessing.ipynb)
+- Model experiments and tuning: [GitHub Pages: /model_experiments.html](https://cagkangrsy.github.io/nyc-taxi-fare-prediction/model_experiments.html) · [Local: docs/model_experiments.html](docs/model_experiments.html) · [Notebook: notebooks/model_experiments.ipynb](notebooks/model_experiments.ipynb)
 
-```
-
-## Project Structure
+### Project Structure
 
 ```
 .
@@ -58,6 +56,11 @@ Read the end-to-end narrative with visuals and explanations. Notebooks are avail
 │   ├── final/
 │   ├── model_experiments/
 │   └── optimize/
+├── docs
+│   ├── index.html
+│   ├── eda.html
+│   ├── preprocessing.html
+│   └── model_experiments.html
 ├── tests
 │   ├── test_app.py
 │   ├── test_preprocess.py
@@ -102,7 +105,7 @@ From the repo root:
 python scripts/download_data.py  
 ```
 
-This downloads all required months to `data/raw/`, fetches `taxi_zone_lookup.csv`, downloads `taxi_zones.zip`, unzips it into `data/raw/shape/`, and removes the zip.
+This downloads all required months to `data/raw/`, fetches `taxi_zone_lookup.csv`, downloads `taxi_zones.zip`, unzips it into `data/raw/shape_data/`, and removes the zip.
 
 ### 1) Run preprocessing
 

@@ -41,7 +41,7 @@ def main() -> None:
 
     # Taxi zones ZIP + unzip + cleanup
     zip_out = join(RAW_DIR, "taxi_zones.zip")
-    unzip_dir = join(RAW_DIR, "shape")
+    unzip_dir = join(RAW_DIR, "shape_data")
     print("Downloading taxi_zones.zip ...")
     fetch(ZIP_URL, zip_out)
     os.makedirs(unzip_dir, exist_ok=True)

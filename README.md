@@ -1,4 +1,12 @@
 ## NYC Taxi Fare Prediction
+### Table of Contents
+- [Key Features](#key-features)
+- [Project Walkthrough](#project-walkthrough)
+- [Project Structure](#project-structure)
+- [Data Layout](#data-layout)
+- [Scripts and CLI](#scripts-and-cli)
+- [Serve the API](#serve-the-api-and-send-a-request)
+- [Data Source](#data-source)
 
  Predict NYC yellow taxi trip fare from NYC TLC monthly data using a clean preprocessing pipeline and LightGBM optimized with Optuna. The repo also offers a small model zoo (Linear/Ridge/XGBoost/LightGBM/CatBoost) for quick baselines and comparisons.
 
@@ -8,6 +16,15 @@
 - Simple CLI scripts for preprocessing and training
 
 ---
+## Project Walkthrough
+
+Read the end-to-end narrative with visuals and explanations. Notebooks are available, and to overcome rendering issues in some environments the HTML exports are more convenient:
+
+- EDA: [notebooks/eda.ipynb](notebooks/eda.ipynb) · [docs/eda.html](docs/eda.html)
+- Preprocessing pipeline: [notebooks/preprocessing.ipynb](notebooks/preprocessing.ipynb) · [docs/preprocessing.html](docs/preprocessing.html)
+- Model experiments and tuning: [notebooks/model_experiments.ipynb](notebooks/model_experiments.ipynb) · [docs/model_experiments.html](docs/model_experiments.html)
+
+```
 
 ## Project Structure
 
@@ -62,7 +79,7 @@ data/
 ├── raw
 │   ├── yellow_tripdata_YYYY-MM.parquet
 │   ├── taxi_zone_lookup.csv
-│   └── shape/
+│   └── shape_data/
 │       └── taxi_zones.shp
 ├── columns_normalized/
 ├── month_filtered/
@@ -75,7 +92,7 @@ data/
     └── test.parquet
 ```
 
-## Usage
+## Scripts and CLI
 
 ### 0) Download data
 
@@ -97,6 +114,12 @@ python scripts/run_preprocess.py
 
 This will create processed splits in `data/splits/` and save `artifacts/preprocess.joblib`.
 
+Optional cleanup to remove intermediate stage folders after processing:
+
+```bash
+python scripts/run_preprocess.py --delete-intermediate
+```
+
 ### 2) Train models
 
 Evaluate baselines:
@@ -108,7 +131,7 @@ python scripts/run_training.py --mode evaluate --models ridge xgboost lightgbm c
 Optimize LightGBM:
 
 ```bash
-python scripts/run_training.py --mode optimize --n_trials 50 --early_stopping_rounds 200 \
+python scripts/run_training.py --mode optimize --n_trials 50 --early_stopping_rounds 200
 ```
 
 Export final model and test metrics (requires `artifacts/optimize/best_params.json`):
